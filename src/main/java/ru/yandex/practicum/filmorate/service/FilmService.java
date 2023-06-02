@@ -45,7 +45,7 @@ public class FilmService {
     }
 
     @PutMapping
-    public Film updateFilm(@Valid @RequestBody Film film) {//узнать насчет правильности написания
+    public Film updateFilm(@Valid @RequestBody Film film) {
         LocalDate checkDateRelease = LocalDate.of(1895, Month.JANUARY, 28);
 
         if (film.getName().isEmpty() || film.getDescription().length() > 200 ||
