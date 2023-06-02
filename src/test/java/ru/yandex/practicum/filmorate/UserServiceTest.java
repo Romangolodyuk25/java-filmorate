@@ -18,56 +18,58 @@ public class UserServiceTest {
     private UserService userService;
 
     @BeforeEach
-    public void beforeEach(){
+    public void beforeEach() {
         userService.clearUsers();
     }
 
     @Test
-    public void shouldCreateUser(){
+    public void shouldCreateUser() {
         assertEquals(0, userService.getAllUsers().size());
 
-        userService.createUser(new User(1, "r.golodyuk@mail.ru", "Roman123", "roma", LocalDate.of(1999,6,25)));
+        userService.createUser(new User(1, "r.golodyuk@mail.ru", "Roman123", "roma", LocalDate.of(1999, 6, 25)));
         assertEquals(1, userService.getAllUsers().size());
     }
 
     @Test
-    public void shouldNotCreateEmptyUser(){
-        assertThrows(ValidationException.class ,() -> userService.createUser(new User(0, "", "", "", null)));
+    public void shouldNotCreateEmptyUser() {
+        assertThrows(ValidationException.class, () -> userService.createUser(new User(0, "", "", "", null)));
         assertEquals(0, userService.getAllUsers().size());
     }
 
     @Test
-    public void shouldNotCreateUserWithEmptyEmail(){
-        assertThrows(ValidationException.class ,() -> userService.createUser(new User(1, "", "Roman123", "roma", LocalDate.of(1999,6,25))));
+    public void shouldNotCreateUserWithEmptyEmail() {
+        assertThrows(ValidationException.class, () -> userService.createUser(new User(1, "", "Roman123", "roma", LocalDate.of(1999, 6, 25))));
         assertEquals(0, userService.getAllUsers().size());
     }
 
     @Test
-    public void shouldNotCreateUserIfEmailNotHaveSymbol(){
-        assertThrows(ValidationException.class ,() -> userService.createUser(new User(1, "r.golodyuk.ru", "Roman123", "roma", LocalDate.of(1999,6,25))));
+    public void shouldNotCreateUserIfEmailNotHaveSymbol() {
+        assertThrows(ValidationException.class, () -> userService.createUser(new User(1, "r.golodyuk.ru", "Roman123", "roma", LocalDate.of(1999, 6, 25))));
         assertEquals(0, userService.getAllUsers().size());
     }
 
     @Test
-    public void shouldNotCreateUserWithEmptyLogin(){
-        assertThrows(ValidationException.class ,() -> userService.createUser(new User(1, "r.golodyuk@mail.ru", "", "roma", LocalDate.of(1999,6,25))));
+    public void shouldNotCreateUserWithEmptyLogin() {
+        assertThrows(ValidationException.class, () -> userService.createUser(new User(1, "r.golodyuk@mail.ru", "", "roma", LocalDate.of(1999, 6, 25))));
         assertEquals(0, userService.getAllUsers().size());
     }
 
     @Test
-    public void shouldNotCreateUserWithBlankLogin(){
-        assertThrows(ValidationException.class ,() -> userService.createUser(new User(1, "r.golodyuk@mail.ru", "Roman 123", "roma", LocalDate.of(1999,6,25))));
+    public void shouldNotCreateUserWithBlankLogin() {
+        assertThrows(ValidationException.class, () -> userService.createUser(new User(1, "r.golodyuk@mail.ru", "Roman 123", "roma", LocalDate.of(1999, 6, 25))));
         assertEquals(0, userService.getAllUsers().size());
     }
+
     @Test
-    public void shouldCreateUserWithEmptyName(){
-       User user = userService.createUser(new User(1, "r.golodyuk@mail.ru", "Roman123", "", LocalDate.of(1999,6,25)));
-        assertEquals(1 , userService.getAllUsers().size());
-        assertEquals("Roman123" , user.getName());
+    public void shouldCreateUserWithEmptyName() {
+        User user = userService.createUser(new User(1, "r.golodyuk@mail.ru", "Roman123", "", LocalDate.of(1999, 6, 25)));
+        assertEquals(1, userService.getAllUsers().size());
+        assertEquals("Roman123", user.getName());
     }
+
     @Test
-    public void shouldNotCreateUserIfBirthdayNotCorrect(){
-        assertThrows(ValidationException.class ,() -> userService.createUser(new User(1, "r.golodyuk@mail.ru", "Roman123", "roma", LocalDate.of(2024,6,25))));
+    public void shouldNotCreateUserIfBirthdayNotCorrect() {
+        assertThrows(ValidationException.class, () -> userService.createUser(new User(1, "r.golodyuk@mail.ru", "Roman123", "roma", LocalDate.of(2024, 6, 25))));
         assertEquals(0, userService.getAllUsers().size());
     }
 
