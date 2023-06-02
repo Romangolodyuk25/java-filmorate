@@ -23,17 +23,17 @@ public class FilmService {
 
 
     @GetMapping
-    public Collection<Film> getAllFilms(){
+    public Collection<Film> getAllFilms() {
         log.debug("Количество фильмов в хранилище: " + films.size());
         return films.values();
     }
 
     @PostMapping
-    public Film createFilm(@Valid @RequestBody Film film){
+    public Film createFilm(@Valid @RequestBody Film film) {
         LocalDate checkDateRelease = LocalDate.of(1895, Month.JANUARY, 28);
 
         if (film.getName().isEmpty() || film.getDescription().length() > 200 ||
-                film.getReleaseDate().isBefore(checkDateRelease) || film.getDuration() <= 0){
+                film.getReleaseDate().isBefore(checkDateRelease) || film.getDuration() <= 0) {
             log.debug("Объект содержит некорректные данные: " + film.toString());
             throw new ValidationException("Данные введене неверно");
         }
@@ -45,11 +45,11 @@ public class FilmService {
     }
 
     @PutMapping
-    public Film updateFilm(@Valid @RequestBody Film film){//узнать насчет правильности написания
+    public Film updateFilm(@Valid @RequestBody Film film) {//узнать насчет правильности написания
         LocalDate checkDateRelease = LocalDate.of(1895, Month.JANUARY, 28);
 
         if (film.getName().isEmpty() || film.getDescription().length() > 200 ||
-                film.getReleaseDate().isBefore(checkDateRelease) || film.getDuration() <= 0){
+                film.getReleaseDate().isBefore(checkDateRelease) || film.getDuration() <= 0) {
             log.debug("Объект содержит некорректные данные: " + film.toString());
             throw new ValidationException("Данные введены неверно");
         }
@@ -63,7 +63,7 @@ public class FilmService {
         return film;
     }
 
-    public void clearFilms(){
+    public void clearFilms() {
         films.clear();
     }
 }

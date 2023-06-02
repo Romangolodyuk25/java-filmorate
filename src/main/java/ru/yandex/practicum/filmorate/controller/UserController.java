@@ -2,16 +2,12 @@ package ru.yandex.practicum.filmorate.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
 
 import javax.validation.Valid;
-import java.time.LocalDate;
 import java.util.Collection;
-import java.util.HashMap;
 
 @Slf4j
 @RestController
@@ -21,17 +17,17 @@ public class UserController {
     private UserService userService;
 
     @GetMapping
-    public Collection<User> getAllUsers(){
+    public Collection<User> getAllUsers() {
         return userService.getAllUsers();
     }
 
     @PostMapping
-    public User createUser(@Valid @RequestBody User user){
+    public User createUser(@Valid @RequestBody User user) {
         return userService.createUser(user);
     }
 
     @PutMapping
-    public User updateUser(@Valid @RequestBody User user){
+    public User updateUser(@Valid @RequestBody User user) {
         return userService.updateUser(user);
     }
 }
