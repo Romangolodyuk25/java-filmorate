@@ -9,7 +9,6 @@ import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 
 @AllArgsConstructor
-@NoArgsConstructor
 @Data
 public class User {
     private int id;

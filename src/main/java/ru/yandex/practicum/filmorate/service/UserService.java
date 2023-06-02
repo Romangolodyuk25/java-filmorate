@@ -55,4 +55,8 @@ public class UserService {
         log.debug("Пользователь " + user.toString() + " обновлен");
         return user;
     }
+
+    public void clearUsers(){
+        users.clear();
+    }
 }

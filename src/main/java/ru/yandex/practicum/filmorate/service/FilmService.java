@@ -62,4 +62,8 @@ public class FilmService {
         log.debug("Фильм " + film.toString() + " обновлен");
         return film;
     }
+
+    public void clearFilms(){
+        films.clear();
+    }
 }

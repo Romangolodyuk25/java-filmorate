@@ -1,6 +1,8 @@
 package ru.yandex.practicum.filmorate;
 
 import static org.junit.jupiter.api.Assertions.*;
+
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -15,19 +17,58 @@ public class UserServiceTest {
     @Autowired
     private UserService userService;
 
-    public User createUser(){
-        return new User(1, "roman.golodyuk@mail.ru", "Romchik01RUS", "krasauchik",LocalDate.of(1999,6,25));
+    @BeforeEach
+    public void beforeEach(){
+        userService.clearUsers();
     }
 
     @Test
     public void shouldCreateUser(){
-        userService.createUser(createUser());
-        assertEquals(1, userService.getAllUsers().size());
+        assertEquals(0, userService.getAllUsers().size());
 
+        userService.createUser(new User(1, "r.golodyuk@mail.ru", "Roman123", "roma", LocalDate.of(1999,6,25)));
+        assertEquals(1, userService.getAllUsers().size());
     }
 
     @Test
     public void shouldNotCreateEmptyUser(){
         assertThrows(ValidationException.class ,() -> userService.createUser(new User(0, "", "", "", null)));
+        assertEquals(0, userService.getAllUsers().size());
     }
+
+    @Test
+    public void shouldNotCreateUserWithEmptyEmail(){
+        assertThrows(ValidationException.class ,() -> userService.createUser(new User(1, "", "Roman123", "roma", LocalDate.of(1999,6,25))));
+        assertEquals(0, userService.getAllUsers().size());
+    }
+
+    @Test
+    public void shouldNotCreateUserIfEmailNotHaveSymbol(){
+        assertThrows(ValidationException.class ,() -> userService.createUser(new User(1, "r.golodyuk.ru", "Roman123", "roma", LocalDate.of(1999,6,25))));
+        assertEquals(0, userService.getAllUsers().size());
+    }
+
+    @Test
+    public void shouldNotCreateUserWithEmptyLogin(){
+        assertThrows(ValidationException.class ,() -> userService.createUser(new User(1, "r.golodyuk@mail.ru", "", "roma", LocalDate.of(1999,6,25))));
+        assertEquals(0, userService.getAllUsers().size());
+    }
+
+    @Test
+    public void shouldNotCreateUserWithBlankLogin(){
+        assertThrows(ValidationException.class ,() -> userService.createUser(new User(1, "r.golodyuk@mail.ru", "Roman 123", "roma", LocalDate.of(1999,6,25))));
+        assertEquals(0, userService.getAllUsers().size());
+    }
+    @Test
+    public void shouldCreateUserWithEmptyName(){
+       User user = userService.createUser(new User(1, "r.golodyuk@mail.ru", "Roman123", "", LocalDate.of(1999,6,25)));
+        assertEquals(1 , userService.getAllUsers().size());
+        assertEquals("Roman123" , user.getName());
+    }
+    @Test
+    public void shouldNotCreateUserIfBirthdayNotCorrect(){
+        assertThrows(ValidationException.class ,() -> userService.createUser(new User(1, "r.golodyuk@mail.ru", "Roman123", "roma", LocalDate.of(2024,6,25))));
+        assertEquals(0, userService.getAllUsers().size());
+    }
+
 }
