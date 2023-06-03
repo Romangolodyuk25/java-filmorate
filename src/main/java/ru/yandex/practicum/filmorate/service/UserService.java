@@ -13,7 +13,7 @@ import java.util.HashMap;
 @Service
 public class UserService {
     private final HashMap<Integer, User> users = new HashMap<>();
-    public static Integer id = 1;
+    private Integer id = 1;
 
     public Collection<User> getAllUsers() {
         log.debug("Количесвто пользователей в хранилище: " + users.size());
@@ -21,14 +21,7 @@ public class UserService {
     }
 
     public User createUser(User user) {
-        if (user.getEmail().isEmpty() || !user.getEmail().contains("@") || user.getLogin().isEmpty() ||
-                user.getLogin().contains(" ") || user.getBirthday().isAfter(LocalDate.now())) {
-            log.debug("Данный объект содержит некорректные данные: " + user.toString());
-            throw new ValidationException("Некорректно введены данные");
-        }
-        if (user.getName() == null || user.getName().isEmpty()) {
-            user.setName(user.getLogin());
-        }
+        checkValidation(user);
         user.setId(id);
         users.put(id, user);
         id++;
@@ -37,11 +30,7 @@ public class UserService {
     }
 
     public User updateUser(User user) {
-        if (user.getEmail().isEmpty() || !user.getEmail().contains("@") || user.getLogin().isEmpty() ||
-                user.getLogin().contains(" ") || user.getBirthday().isAfter(LocalDate.now())) {
-            log.debug("Данный объект содержит некорректные данные: " + user.toString());
-            throw new ValidationException("Некорректно введены данные");
-        }
+        checkValidation(user);
         if (users.containsKey(user.getId())) {
             users.put(user.getId(), user);
         } else {
@@ -54,5 +43,16 @@ public class UserService {
 
     public void clearUsers() {
         users.clear();
+    }
+
+    public void checkValidation(User user) {
+        if (user.getEmail().isEmpty() || !user.getEmail().contains("@") || user.getLogin().isEmpty() ||
+                user.getLogin().contains(" ") || user.getBirthday().isAfter(LocalDate.now())) {
+            log.debug("Данный объект содержит некорректные данные: " + user.toString());
+            throw new ValidationException("Некорректно введены данные");
+        }
+        if (user.getName() == null || user.getName().isEmpty()) {
+            user.setName(user.getLogin());
+        }
     }
 }

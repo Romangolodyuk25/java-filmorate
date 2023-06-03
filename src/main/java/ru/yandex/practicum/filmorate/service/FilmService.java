@@ -18,8 +18,9 @@ import java.util.HashMap;
 @Slf4j
 @Service
 public class FilmService {
+    private static final LocalDate MIN_DATE_RELEASE = LocalDate.of(1895, Month.JANUARY, 28);
     private final HashMap<Integer, Film> films = new HashMap<>();
-    public static Integer id = 1;
+    private Integer id = 1;
 
 
     @GetMapping
@@ -30,13 +31,7 @@ public class FilmService {
 
     @PostMapping
     public Film createFilm(@Valid @RequestBody Film film) {
-        LocalDate checkDateRelease = LocalDate.of(1895, Month.JANUARY, 28);
-
-        if (film.getName().isEmpty() || film.getDescription().length() > 200 ||
-                film.getReleaseDate().isBefore(checkDateRelease) || film.getDuration() <= 0) {
-            log.debug("Объект содержит некорректные данные: " + film.toString());
-            throw new ValidationException("Данные введене неверно");
-        }
+        checkValidation(film);
         film.setId(id);
         films.put(id, film);
         id++;
@@ -46,13 +41,7 @@ public class FilmService {
 
     @PutMapping
     public Film updateFilm(@Valid @RequestBody Film film) {
-        LocalDate checkDateRelease = LocalDate.of(1895, Month.JANUARY, 28);
-
-        if (film.getName().isEmpty() || film.getDescription().length() > 200 ||
-                film.getReleaseDate().isBefore(checkDateRelease) || film.getDuration() <= 0) {
-            log.debug("Объект содержит некорректные данные: " + film.toString());
-            throw new ValidationException("Данные введены неверно");
-        }
+        checkValidation(film);
         if (films.containsKey(film.getId())) {
             films.put(film.getId(), film);
         } else {
@@ -65,5 +54,13 @@ public class FilmService {
 
     public void clearFilms() {
         films.clear();
+    }
+
+    public void checkValidation(Film film) {
+        if (film.getName().isEmpty() || film.getDescription().length() > 200 ||
+                film.getReleaseDate().isBefore(MIN_DATE_RELEASE) || film.getReleaseDate() == null) {
+            log.debug("Фильм содержит некорректные данные: " + film.toString());
+            throw new ValidationException("Данные введены неверно");
+        }
     }
 }
