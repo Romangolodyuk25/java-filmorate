@@ -25,7 +25,7 @@ public class UserService {
         user.setId(id);
         users.put(id, user);
         id++;
-        log.debug("Пользователь " + user.toString() + " добавлен в хранилище");
+        log.debug("Пользователь " + user + " добавлен в хранилище");
         return user;
     }
 
@@ -37,7 +37,7 @@ public class UserService {
             log.debug("Пользователь с таким id не существует");
             throw new ValidationException("Некорректно введены данные");
         }
-        log.debug("Пользователь " + user.toString() + " обновлен");
+        log.debug("Пользователь " + user + " обновлен");
         return user;
     }
 
@@ -46,9 +46,10 @@ public class UserService {
     }
 
     public void checkValidation(User user) {
-        if (user.getEmail().isEmpty() || !user.getEmail().contains("@") || user.getLogin().isEmpty() ||
+        if (user.getEmail() == null || user.getLogin() == null || user.getBirthday() == null ||
+                user.getEmail().isEmpty() || !user.getEmail().contains("@") || user.getLogin().isEmpty() ||
                 user.getLogin().contains(" ") || user.getBirthday().isAfter(LocalDate.now())) {
-            log.debug("Данный объект содержит некорректные данные: " + user.toString());
+            log.debug("Данный объект содержит некорректные данные: " + user);
             throw new ValidationException("Некорректно введены данные");
         }
         if (user.getName() == null || user.getName().isEmpty()) {

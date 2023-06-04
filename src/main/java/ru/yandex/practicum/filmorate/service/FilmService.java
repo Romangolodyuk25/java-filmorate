@@ -35,7 +35,7 @@ public class FilmService {
         film.setId(id);
         films.put(id, film);
         id++;
-        log.debug("Фильм " + film.toString() + " добавлен в хрнаилище");
+        log.debug("Фильм " + film + " добавлен в хрнаилище");
         return film;
     }
 
@@ -48,7 +48,7 @@ public class FilmService {
             log.debug("Фильм с данным айди не существует");
             throw new ValidationException("Некорректно введены данные");
         }
-        log.debug("Фильм " + film.toString() + " обновлен");
+        log.debug("Фильм " + film + " обновлен");
         return film;
     }
 
@@ -57,9 +57,10 @@ public class FilmService {
     }
 
     public void checkValidation(Film film) {
-        if (film.getName().isEmpty() || film.getDescription().length() > 200 ||
-                film.getReleaseDate().isBefore(MIN_DATE_RELEASE) || film.getReleaseDate() == null) {
-            log.debug("Фильм содержит некорректные данные: " + film.toString());
+        if (film.getName() == null || film.getDescription() == null || film.getReleaseDate() == null ||
+                film.getName().isEmpty() || film.getDescription().length() > 200 ||
+                film.getReleaseDate().isBefore(MIN_DATE_RELEASE)) {
+            log.debug("Фильм содержит некорректные данные: " + film);
             throw new ValidationException("Данные введены неверно");
         }
     }
