@@ -7,6 +7,7 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
+import java.util.Set;
 
 @AllArgsConstructor
 @Data //генерит @RequiredArgsConstructor который создает конструктор для всех final полей
@@ -20,6 +21,17 @@ public class Film {
     private LocalDate releaseDate;
     @Min(1)
     private int duration;
+    private Set<Integer> likes;
 
+    public void addLike(int id) {
+        likes.add(id);
+    }
 
+    public void deleteId(int id) {
+        likes.remove(id);
+    }
+
+    public Set<Integer> getAllLikes() {
+        return likes;
+    }
 }

@@ -1,67 +1,65 @@
 package ru.yandex.practicum.filmorate.service;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
+import ru.yandex.practicum.filmorate.exception.ObjectNotExistException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.storage.FilmStorage;
 
-import javax.validation.Valid;
-import java.time.LocalDate;
-import java.time.Month;
-import java.util.Collection;
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+
 
 @Slf4j
 @Service
 public class FilmService {
-    private static final LocalDate MIN_DATE_RELEASE = LocalDate.of(1895, Month.JANUARY, 28);
-    private final HashMap<Integer, Film> films = new HashMap<>();
-    private Integer id = 1;
 
+    private final FilmStorage inMemoryFilmStorage;
 
-    @GetMapping
-    public Collection<Film> getAllFilms() {
-        log.debug("Количество фильмов в хранилище: " + films.size());
-        return films.values();
+    @Autowired
+    public FilmService(FilmStorage inMemoryFilmStorage) {
+        this.inMemoryFilmStorage = inMemoryFilmStorage;
     }
 
-    @PostMapping
-    public Film createFilm(@Valid @RequestBody Film film) {
-        checkValidation(film);
-        film.setId(id);
-        films.put(id, film);
-        id++;
-        log.debug("Фильм " + film + " добавлен в хрнаилище");
-        return film;
-    }
-
-    @PutMapping
-    public Film updateFilm(@Valid @RequestBody Film film) {
-        checkValidation(film);
-        if (films.containsKey(film.getId())) {
-            films.put(film.getId(), film);
-        } else {
-            log.debug("Фильм с данным айди не существует");
-            throw new ValidationException("Некорректно введены данные");
+    public void addLike(int filmId, int userId) {
+        Film receivedFilm = inMemoryFilmStorage.getFilmById(filmId);
+        if (receivedFilm == null) {
+            log.debug("Фильм с id " + filmId + " не существует");
+            throw new ObjectNotExistException("Переданный айди фильма не найден");
         }
-        log.debug("Фильм " + film + " обновлен");
-        return film;
+        receivedFilm.addLike(userId);
+        inMemoryFilmStorage.updateFilm(receivedFilm);
     }
 
-    public void clearFilms() {
-        films.clear();
-    }
-
-    public void checkValidation(Film film) {
-        if (film.getName() == null || film.getDescription() == null || film.getReleaseDate() == null ||
-                film.getName().isEmpty() || film.getDescription().length() > 200 ||
-                film.getReleaseDate().isBefore(MIN_DATE_RELEASE)) {
-            log.debug("Фильм содержит некорректные данные: " + film);
-            throw new ValidationException("Данные введены неверно");
+    public void deleteLike(int filmId, int userId) {
+        Film receivedFilm = inMemoryFilmStorage.getFilmById(filmId);
+        if (receivedFilm == null) {
+            log.debug("Фильм с id " + filmId + " не существует");
+            throw new ObjectNotExistException("Переданный айди фильма не найден");
         }
+        if (!receivedFilm.getAllLikes().contains(userId)) {
+            log.debug("Пользователь с id " + userId + " не ставил оценку фильму");
+            throw new ObjectNotExistException("Некорректный айди пользователя");
+        }
+        receivedFilm.deleteId(userId);
+        inMemoryFilmStorage.updateFilm(receivedFilm);
     }
+
+    public List<Film> getTopFilms(int count) {
+        List<Film> sortedFilm = new ArrayList<>(inMemoryFilmStorage.getAllFilms());
+        sortedFilm.sort(new Comparator<Film>() {
+            @Override
+            public int compare(Film film1, Film film2) {
+                return film2.getAllLikes().size() - film1.getAllLikes().size();
+            }
+        });
+        return sortedFilm.subList(0, count);
+    }
+
+    public void deleteAllFilms() {
+        inMemoryFilmStorage.deleteAllFilm();
+    }
+
 }

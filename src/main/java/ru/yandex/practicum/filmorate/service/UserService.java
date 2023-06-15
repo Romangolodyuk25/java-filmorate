@@ -1,59 +1,82 @@
 package ru.yandex.practicum.filmorate.service;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
+import ru.yandex.practicum.filmorate.exception.ObjectNotExistException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.UserStorage;
 
-import java.time.LocalDate;
-import java.util.Collection;
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.List;
 
 @Slf4j
 @Service
 public class UserService {
-    private final HashMap<Integer, User> users = new HashMap<>();
-    private Integer id = 1;
 
-    public Collection<User> getAllUsers() {
-        log.debug("Количесвто пользователей в хранилище: " + users.size());
-        return users.values();
+    private final UserStorage inMemoryUserStorage;
+
+    @Autowired
+    public UserService(UserStorage inMemoryUserStorage) {
+        this.inMemoryUserStorage = inMemoryUserStorage;
     }
 
-    public User createUser(User user) {
-        checkValidation(user);
-        user.setId(id);
-        users.put(id, user);
-        id++;
-        log.debug("Пользователь " + user + " добавлен в хранилище");
-        return user;
-    }
-
-    public User updateUser(User user) {
-        checkValidation(user);
-        if (users.containsKey(user.getId())) {
-            users.put(user.getId(), user);
-        } else {
-            log.debug("Пользователь с таким id не существует");
-            throw new ValidationException("Некорректно введены данные");
+    public void addFriend(int userId, int friendId) {
+        User receivedUser = inMemoryUserStorage.getUserById(userId);
+        User receivedFriend = inMemoryUserStorage.getUserById(friendId);
+        if (receivedUser == null || receivedFriend == null) {
+            log.debug("Некорректно передан айди юзера или друга");
+            throw new ObjectNotExistException("Переданный айди не найден");
         }
-        log.debug("Пользователь " + user + " обновлен");
-        return user;
+        receivedUser.addFriend(friendId);
+        receivedFriend.addFriend(userId);
+        inMemoryUserStorage.updateUser(receivedUser);
+        inMemoryUserStorage.updateUser(receivedFriend);
     }
 
-    public void clearUsers() {
-        users.clear();
+    public void deleteFriend(int userId, int friendId) {
+        User receivedUser = inMemoryUserStorage.getUserById(userId);
+        User receivedFriend = inMemoryUserStorage.getUserById(friendId);
+        if (receivedUser == null || receivedFriend == null) {
+            log.debug("Некорректно передан айди юзера или друга");
+            throw new ObjectNotExistException("Переданный айди не найден");
+        }
+        receivedUser.deleteFriend(friendId);
+        receivedFriend.deleteFriend(userId);
+        inMemoryUserStorage.updateUser(receivedUser);
+        inMemoryUserStorage.updateUser(receivedFriend);
     }
 
-    public void checkValidation(User user) {
-        if (user.getEmail() == null || user.getLogin() == null || user.getBirthday() == null ||
-                user.getEmail().isEmpty() || !user.getEmail().contains("@") || user.getLogin().isEmpty() ||
-                user.getLogin().contains(" ") || user.getBirthday().isAfter(LocalDate.now())) {
-            log.debug("Данный объект содержит некорректные данные: " + user);
-            throw new ValidationException("Некорректно введены данные");
+    public List<User> getAllFriends(int userId) {
+        List<User> friends = new ArrayList<>();
+        User receivedUser = inMemoryUserStorage.getUserById(userId);
+        if (receivedUser == null) {
+            log.debug("User с айди " + userId + " не существует");
+            throw new ObjectNotExistException("Переданный айди юзера не найден");
         }
-        if (user.getName() == null || user.getName().isEmpty()) {
-            user.setName(user.getLogin());
+        for (Integer id : receivedUser.getAllFriends()) {
+            friends.add(inMemoryUserStorage.getUserById(id));
         }
+        return friends;
+    }
+
+    public List<User> getCommonFriends(int userId, int otherId) {
+        List<User> commonFriends = new ArrayList<>();
+        User receivedUser = inMemoryUserStorage.getUserById(userId);
+        User receivedFriend = inMemoryUserStorage.getUserById(otherId);
+        if (receivedUser == null || receivedFriend == null) {
+            log.debug("Некорректно передан айди юзера или друга");
+            throw new ObjectNotExistException("Переданный айди не найден");
+        }
+        for (Integer id : receivedUser.getAllFriends()) {
+            if (receivedFriend.getAllFriends().contains(id)) {
+                commonFriends.add(inMemoryUserStorage.getUserById(id));
+            }
+        }
+        return commonFriends;
+    }
+
+    public void deleteAllUsers() {
+        inMemoryUserStorage.deleteAllUser();
     }
 }
