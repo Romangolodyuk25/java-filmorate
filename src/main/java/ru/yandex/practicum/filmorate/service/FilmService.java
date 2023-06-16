@@ -8,8 +8,8 @@ import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Slf4j
@@ -25,8 +25,8 @@ public class FilmService {
 
     public void addLike(int filmId, int userId) {
         Film receivedFilm = inMemoryFilmStorage.getFilmById(filmId);
-        if (receivedFilm == null) {
-            log.debug("Фильм с id " + filmId + " не существует");
+        if (receivedFilm == null || filmId < 1 || userId < 1) {
+            log.debug("Некорректно введены данные");
             throw new ObjectNotExistException("Переданный айди фильма не найден");
         }
         receivedFilm.addLike(userId);
@@ -35,8 +35,8 @@ public class FilmService {
 
     public void deleteLike(int filmId, int userId) {
         Film receivedFilm = inMemoryFilmStorage.getFilmById(filmId);
-        if (receivedFilm == null) {
-            log.debug("Фильм с id " + filmId + " не существует");
+        if (receivedFilm == null || filmId < 1 || userId < 1) {
+            log.debug("Некорректно введены данные");
             throw new ObjectNotExistException("Переданный айди фильма не найден");
         }
         if (!receivedFilm.getAllLikes().contains(userId)) {
@@ -48,14 +48,22 @@ public class FilmService {
     }
 
     public List<Film> getTopFilms(int count) {
-        List<Film> sortedFilm = new ArrayList<>(inMemoryFilmStorage.getAllFilms());
-        sortedFilm.sort(new Comparator<Film>() {
-            @Override
-            public int compare(Film film1, Film film2) {
-                return film2.getAllLikes().size() - film1.getAllLikes().size();
-            }
-        });
-        return sortedFilm.subList(0, count);
+        List<Film> films = new ArrayList<>(inMemoryFilmStorage.getAllFilms());
+        return films.stream()
+                .sorted((f1, f2) -> f2.getAllLikes().size() - f1.getAllLikes().size())
+                .limit(count)
+                .collect(Collectors.toList());
+        //        List<Film> sortedFilm = new ArrayList<>(inMemoryFilmStorage.getAllFilms());
+//        sortedFilm.sort(new Comparator<Film>() {
+//            @Override
+//            public int compare(Film film1, Film film2) {
+//                return film2.getAllLikes().size() - film1.getAllLikes().size();
+//            }
+//        });
+//        if (count == 10) {
+//            return new ArrayList<>(inMemoryFilmStorage.getAllFilms());
+//        }
+//        return sortedFilm.subList(0, count);
     }
 
     public void deleteAllFilms() {

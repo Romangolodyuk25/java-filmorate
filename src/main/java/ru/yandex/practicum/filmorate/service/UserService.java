@@ -24,7 +24,7 @@ public class UserService {
     public void addFriend(int userId, int friendId) {
         User receivedUser = inMemoryUserStorage.getUserById(userId);
         User receivedFriend = inMemoryUserStorage.getUserById(friendId);
-        if (receivedUser == null || receivedFriend == null) {
+        if (receivedUser == null || receivedFriend == null || userId < 0 || friendId < 0) {
             log.debug("Некорректно передан айди юзера или друга");
             throw new ObjectNotExistException("Переданный айди не найден");
         }
@@ -37,7 +37,7 @@ public class UserService {
     public void deleteFriend(int userId, int friendId) {
         User receivedUser = inMemoryUserStorage.getUserById(userId);
         User receivedFriend = inMemoryUserStorage.getUserById(friendId);
-        if (receivedUser == null || receivedFriend == null) {
+        if (receivedUser == null || receivedFriend == null || userId < 0 || friendId < 0) {
             log.debug("Некорректно передан айди юзера или друга");
             throw new ObjectNotExistException("Переданный айди не найден");
         }
@@ -50,7 +50,7 @@ public class UserService {
     public List<User> getAllFriends(int userId) {
         List<User> friends = new ArrayList<>();
         User receivedUser = inMemoryUserStorage.getUserById(userId);
-        if (receivedUser == null) {
+        if (receivedUser == null || userId < 0) {
             log.debug("User с айди " + userId + " не существует");
             throw new ObjectNotExistException("Переданный айди юзера не найден");
         }
@@ -64,13 +64,17 @@ public class UserService {
         List<User> commonFriends = new ArrayList<>();
         User receivedUser = inMemoryUserStorage.getUserById(userId);
         User receivedFriend = inMemoryUserStorage.getUserById(otherId);
-        if (receivedUser == null || receivedFriend == null) {
+        if (receivedUser == null || receivedFriend == null || userId < 0 || otherId < 0) {
             log.debug("Некорректно передан айди юзера или друга");
             throw new ObjectNotExistException("Переданный айди не найден");
         }
-        for (Integer id : receivedUser.getAllFriends()) {
-            if (receivedFriend.getAllFriends().contains(id)) {
-                commonFriends.add(inMemoryUserStorage.getUserById(id));
+        if (receivedUser.getAllFriends() != null && !receivedUser.getAllFriends().isEmpty()) {
+            for (Integer id : receivedUser.getAllFriends()) {
+                if (receivedFriend.getAllFriends() != null && !receivedFriend.getAllFriends().isEmpty()) {
+                    if (receivedFriend.getAllFriends().contains(id)) {
+                        commonFriends.add(inMemoryUserStorage.getUserById(id));
+                    }
+                }
             }
         }
         return commonFriends;

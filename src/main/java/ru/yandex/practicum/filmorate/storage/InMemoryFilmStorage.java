@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.storage;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import ru.yandex.practicum.filmorate.exception.ObjectNotExistException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 
@@ -9,6 +10,7 @@ import java.time.LocalDate;
 import java.time.Month;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 
 @Slf4j
 @Component
@@ -41,7 +43,7 @@ public class InMemoryFilmStorage implements FilmStorage {
             films.put(film.getId(), film);
         } else {
             log.debug("Некорректно введены данные");
-            throw new ValidationException("Некорректно введены данные");
+            throw new ObjectNotExistException("Некорректно введены данные");
         }
         log.debug("Фильм " + film + " обновлен");
         return film;
@@ -50,9 +52,9 @@ public class InMemoryFilmStorage implements FilmStorage {
     @Override
     public Film getFilmById(int id) {
         Film receivedFilm = films.get(id);
-        if (id < 1) {
+        if (receivedFilm == null || id < 1 || !films.containsKey(id)) {
             log.debug("Некорректно введены данные");
-            throw new ValidationException("Некорректно введены данные");
+            throw new ObjectNotExistException("Некорректно введены данные");
         }
         log.debug("Фильм " + receivedFilm + " получен");
         return receivedFilm;
@@ -61,9 +63,9 @@ public class InMemoryFilmStorage implements FilmStorage {
     @Override
     public void deleteFilmById(int id) {
         Film receivedFilm = films.get(id);
-        if (id < 1) {
+        if (receivedFilm == null || id < 1 || !films.containsKey(id)) {
             log.debug("Некорректно введены данные");
-            throw new ValidationException("Некорректно введены данные");
+            throw new ObjectNotExistException("Некорректно введены данные");
         }
         log.debug("Фильм " + receivedFilm + " удален");
         films.remove(id);
@@ -81,6 +83,9 @@ public class InMemoryFilmStorage implements FilmStorage {
                 film.getReleaseDate().isBefore(MIN_DATE_RELEASE)) {
             log.debug("Фильм содержит некорректные данные: " + film);
             throw new ValidationException("Данные введены неверно");
+        }
+        if (film.getAllLikes() == null) {
+            film.setLikes(new HashSet<>());
         }
     }
 }
