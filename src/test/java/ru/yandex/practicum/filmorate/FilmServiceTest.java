@@ -48,7 +48,7 @@ public class FilmServiceTest {
     }
 
     @Test
-    public void shouldDeleteLike() {// если запустить тест отдельно , то он работает
+    public void shouldDeleteLike() {
         Film film = inMemoryFilmStorage.createFilm(new Film(1, "Иллюзия обмана", "Фильм про фокусы", LocalDate.of(2010, 7, 20), 120, new HashSet<>()));
         User user = inMemoryUserStorage.createUser(new User(5, "r.golodyuk@mail.ru", "Roman123", "", LocalDate.of(1999, 6, 25), new HashSet<>()));
 
@@ -104,7 +104,7 @@ public class FilmServiceTest {
     }
 
     @Test
-    public void shouldNotDeleteLike() { //если запустить тест отдельно он работет , если со всеми то не работает
+    public void shouldNotDeleteLike() {
         Film film = inMemoryFilmStorage.createFilm(new Film(1, "Иллюзия обмана", "Фильм про фокусы", LocalDate.of(2010, 7, 20), 120, new HashSet<>()));
         User user = inMemoryUserStorage.createUser(new User(5, "r.golodyuk@mail.ru", "Roman123", "", LocalDate.of(1999, 6, 25), new HashSet<>()));
 
