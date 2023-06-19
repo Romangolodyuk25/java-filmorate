@@ -2,20 +2,17 @@ package ru.yandex.practicum.filmorate.storage;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import ru.yandex.practicum.filmorate.exception.ObjectAlreadyExist;
 import ru.yandex.practicum.filmorate.exception.ObjectNotExistException;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 
-import java.time.LocalDate;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 
 @Slf4j
 @Component
 public class InMemoryUserStorage implements UserStorage {
     private final HashMap<Integer, User> users = new HashMap<>();
-    private Integer id = 1;
 
     @Override
     public Collection<User> getAllUsers() {
@@ -25,23 +22,22 @@ public class InMemoryUserStorage implements UserStorage {
 
     @Override
     public User createUser(User user) {
-        checkValidation(user);
-        user.setId(id);
-        users.put(id, user);
-        id++;
+        if (users.containsKey(user.getId())) {
+            log.debug("Юзер с таким айди уже существует");
+            throw new ObjectAlreadyExist("Данный айди уже существует");
+        }
+        users.put(user.getId(), user);
         log.debug("Пользователь " + user + " добавлен в хранилище");
         return user;
     }
 
     @Override
     public User updateUser(User user) {
-        checkValidation(user);
-        if (users.containsKey(user.getId())) {
-            users.put(user.getId(), user);
-        } else {
+        if (users.get(user.getId()) == null) {
             log.debug("Пользователь с таким id не существует");
             throw new ObjectNotExistException("Некорректно введены данные");
         }
+        users.put(user.getId(), user);
         log.debug("Пользователь " + user + " обновлен");
         return user;
     }
@@ -49,11 +45,7 @@ public class InMemoryUserStorage implements UserStorage {
     @Override
     public User getUserById(int id) {
         User receivedUser = users.get(id);
-//        if (id < 1) {
-//            log.debug("Некорректно введены данные");
-//            throw new ValidationException("Некорректно введены данные");
-//        }
-        if (receivedUser == null || id < 1) {
+        if (receivedUser == null) {
             log.debug("Пользователь с таким id не существует");
             throw new ObjectNotExistException("Некорректно введены данные");
         }
@@ -64,11 +56,7 @@ public class InMemoryUserStorage implements UserStorage {
     @Override
     public void deleteUserById(int id) {
         User receivedUser = users.get(id);
-//        if (id < 1) {
-//            log.debug("Некорректно введены данные");
-//            throw new ValidationException("Некорректно введены данные");
-//        }
-        if (receivedUser == null || id < 1) {
+        if (receivedUser == null) {
             log.debug("Пользователь с таким id не существует");
             throw new ObjectNotExistException("Некорректно введены данные");
         }
@@ -79,22 +67,6 @@ public class InMemoryUserStorage implements UserStorage {
     @Override
     public void deleteAllUser() {
         users.clear();
-        id = 1;
-    }
-
-    public void checkValidation(User user) {
-        if (user.getEmail() == null || user.getLogin() == null || user.getBirthday() == null ||
-                user.getEmail().isEmpty() || !user.getEmail().contains("@") || user.getLogin().isEmpty() ||
-                user.getLogin().contains(" ") || user.getBirthday().isAfter(LocalDate.now())) {
-            log.debug("Данный объект содержит некорректные данные: " + user);
-            throw new ValidationException("Некорректно введены данные");
-        }
-        if (user.getName() == null || user.getName().isEmpty()) {
-            user.setName(user.getLogin());
-        }
-        if (user.getAllFriends() == null) {
-            user.setFriends(new HashSet<>());
-        }
     }
 
 }

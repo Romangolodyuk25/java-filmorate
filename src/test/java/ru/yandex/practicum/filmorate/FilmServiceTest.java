@@ -10,24 +10,20 @@ import ru.yandex.practicum.filmorate.exception.ObjectNotExistException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.FilmService;
-import ru.yandex.practicum.filmorate.storage.FilmStorage;
-import ru.yandex.practicum.filmorate.storage.UserStorage;
+import ru.yandex.practicum.filmorate.service.UserService;
 
 import java.time.LocalDate;
-import java.util.HashSet;
 import java.util.List;
 
 @SpringBootTest
 public class FilmServiceTest {
     private final FilmService filmService;
-    private final FilmStorage inMemoryFilmStorage;
-    private final UserStorage inMemoryUserStorage;
+    private final UserService userService;
 
     @Autowired
-    public FilmServiceTest(FilmService filmService, FilmStorage inMemoryFilmStorage, UserStorage inMemoryUserStorage) {
+    public FilmServiceTest(FilmService filmService, UserService userService) {
         this.filmService = filmService;
-        this.inMemoryFilmStorage = inMemoryFilmStorage;
-        this.inMemoryUserStorage = inMemoryUserStorage;
+        this.userService = userService;
     }
 
     @BeforeEach
@@ -37,42 +33,42 @@ public class FilmServiceTest {
 
     @Test
     public void shouldAddLike() {
-        Film film = inMemoryFilmStorage.createFilm(new Film(1, "Иллюзия обмана", "Фильм про фокусы", LocalDate.of(2010, 7, 20), 120, new HashSet<>()));
-        User user = inMemoryUserStorage.createUser(new User(5, "r.golodyuk@mail.ru", "Roman123", "", LocalDate.of(1999, 6, 25), new HashSet<>()));
+        Film film = filmService.createFilm(new Film(1, "Иллюзия обмана", "Фильм про фокусы", LocalDate.of(2010, 7, 20), 120));
+        User user = userService.createUser(new User(1, "r.golodyuk@mail.ru", "Roman123", "", LocalDate.of(1999, 6, 25)));
 
-        assertEquals(0, film.getAllLikes().size());
+        assertEquals(0, film.getLikes().size());
 
-        filmService.addLike(1, 5);
-        assertEquals(1, film.getAllLikes().size());
-        assertTrue(film.getAllLikes().contains(5));
+        filmService.addLike(1, 1);
+        assertEquals(1, film.getLikes().size());
+        assertTrue(film.getLikes().contains(1));
     }
 
     @Test
     public void shouldDeleteLike() {
-        Film film = inMemoryFilmStorage.createFilm(new Film(1, "Иллюзия обмана", "Фильм про фокусы", LocalDate.of(2010, 7, 20), 120, new HashSet<>()));
-        User user = inMemoryUserStorage.createUser(new User(5, "r.golodyuk@mail.ru", "Roman123", "", LocalDate.of(1999, 6, 25), new HashSet<>()));
+        Film film = filmService.createFilm(new Film(1, "Иллюзия обмана", "Фильм про фокусы", LocalDate.of(2010, 7, 20), 120));
+        User user = userService.createUser(new User(5, "r.golodyuk@mail.ru", "Roman123", "", LocalDate.of(1999, 6, 25)));
 
-        assertEquals(0, film.getAllLikes().size());
+        assertEquals(0, film.getLikes().size());
 
         filmService.addLike(1, 5);
-        assertEquals(1, film.getAllLikes().size());
-        assertTrue(film.getAllLikes().contains(5));
+        assertEquals(1, film.getLikes().size());
+        assertTrue(film.getLikes().contains(5));
 
         filmService.deleteLike(1, 5);
-        assertEquals(0, film.getAllLikes().size());
+        assertEquals(0, film.getLikes().size());
     }
 
     @Test
     public void shouldReturnTopFilm() {
-        Film film1 = inMemoryFilmStorage.createFilm(new Film(1, "Иллюзия обмана", "Фильм про фокусы", LocalDate.of(2010, 7, 20), 120, new HashSet<>()));
-        Film film2 = inMemoryFilmStorage.createFilm(new Film(2, "Голодные игры", "Фильм про выживание", LocalDate.of(2010, 7, 20), 120, new HashSet<>()));
-        Film film3 = inMemoryFilmStorage.createFilm(new Film(3, "Иллюзия обмана2", "Фильм про фокусы", LocalDate.of(2010, 7, 20), 120, new HashSet<>()));
-        Film film4 = inMemoryFilmStorage.createFilm(new Film(4, "Угнать за 60 сек", "Фильм про машины", LocalDate.of(2010, 7, 20), 120, new HashSet<>()));
-        Film film5 = inMemoryFilmStorage.createFilm(new Film(5, "Гарри Поттер", "Фильм про магию", LocalDate.of(2010, 7, 20), 120, new HashSet<>()));
+        Film film1 = filmService.createFilm(new Film(1, "Иллюзия обмана", "Фильм про фокусы", LocalDate.of(2010, 7, 20), 120));
+        Film film2 = filmService.createFilm(new Film(2, "Голодные игры", "Фильм про выживание", LocalDate.of(2010, 7, 20), 120));
+        Film film3 = filmService.createFilm(new Film(3, "Иллюзия обмана2", "Фильм про фокусы", LocalDate.of(2010, 7, 20), 120));
+        Film film4 = filmService.createFilm(new Film(4, "Угнать за 60 сек", "Фильм про машины", LocalDate.of(2010, 7, 20), 120));
+        Film film5 = filmService.createFilm(new Film(5, "Гарри Поттер", "Фильм про магию", LocalDate.of(2010, 7, 20), 120));
 
-        User user = inMemoryUserStorage.createUser(new User(1, "r.golodyuk@mail.ru", "Roman123", "", LocalDate.of(1999, 6, 25), new HashSet<>()));
-        User user2 = inMemoryUserStorage.createUser(new User(2, "a.ivanod@mail.ru", "ivan777", "", LocalDate.of(2000, 6, 25), new HashSet<>()));
-        User user3 = inMemoryUserStorage.createUser(new User(3, "a.petrov@mail.ru", "petya111", "", LocalDate.of(2005, 6, 25), new HashSet<>()));
+        User user = userService.createUser(new User(1, "r.golodyuk@mail.ru", "Roman123", "", LocalDate.of(1999, 6, 25)));
+        User user2 = userService.createUser(new User(2, "a.ivanod@mail.ru", "ivan777", "", LocalDate.of(2000, 6, 25)));
+        User user3 = userService.createUser(new User(3, "a.petrov@mail.ru", "petya111", "", LocalDate.of(2005, 6, 25)));
 
         filmService.addLike(film1.getId(), user.getId());//1 фильм 1 лайка
 
@@ -95,24 +91,24 @@ public class FilmServiceTest {
 
     @Test
     public void shouldNotAddLike() {
-        Film film = inMemoryFilmStorage.createFilm(new Film(1, "Иллюзия обмана", "Фильм про фокусы", LocalDate.of(2010, 7, 20), 120, new HashSet<>()));
-        User user = inMemoryUserStorage.createUser(new User(5, "r.golodyuk@mail.ru", "Roman123", "", LocalDate.of(1999, 6, 25), new HashSet<>()));
+        Film film = filmService.createFilm(new Film(1, "Иллюзия обмана", "Фильм про фокусы", LocalDate.of(2010, 7, 20), 120));
+        User user = userService.createUser(new User(5, "r.golodyuk@mail.ru", "Roman123", "", LocalDate.of(1999, 6, 25)));
 
-        assertEquals(0, film.getAllLikes().size());
+        assertEquals(0, film.getLikes().size());
 
         assertThrows(ObjectNotExistException.class, () -> filmService.addLike(2, 5));
     }
 
     @Test
     public void shouldNotDeleteLike() {
-        Film film = inMemoryFilmStorage.createFilm(new Film(1, "Иллюзия обмана", "Фильм про фокусы", LocalDate.of(2010, 7, 20), 120, new HashSet<>()));
-        User user = inMemoryUserStorage.createUser(new User(5, "r.golodyuk@mail.ru", "Roman123", "", LocalDate.of(1999, 6, 25), new HashSet<>()));
+        Film film = filmService.createFilm(new Film(1, "Иллюзия обмана", "Фильм про фокусы", LocalDate.of(2010, 7, 20), 120));
+        User user = userService.createUser(new User(5, "r.golodyuk@mail.ru", "Roman123", "", LocalDate.of(1999, 6, 25)));
 
-        assertEquals(0, film.getAllLikes().size());
+        assertEquals(0, film.getLikes().size());
 
         filmService.addLike(1, 5);
-        assertEquals(1, film.getAllLikes().size());
-        assertTrue(film.getAllLikes().contains(5));
+        assertEquals(1, film.getLikes().size());
+        assertTrue(film.getLikes().contains(5));
 
         assertThrows(ObjectNotExistException.class, () -> filmService.deleteLike(2, 5));
     }

@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
-import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
 
 import javax.validation.Valid;
 import java.util.Collection;
@@ -16,38 +15,36 @@ import java.util.List;
 @RequestMapping("/users")
 public class UserController {
 
-    private UserService userService;
-    private InMemoryUserStorage inMemoryUserStorage;
+    private final UserService userService;
 
     @Autowired
-    public UserController(UserService userService, InMemoryUserStorage inMemoryUserStorage) {
+    public UserController(UserService userService) {
         this.userService = userService;
-        this.inMemoryUserStorage = inMemoryUserStorage;
     }
 
     @GetMapping
     public Collection<User> getAllUsers() {
-        return inMemoryUserStorage.getAllUsers();
+        return userService.getAllUsers();
     }
 
     @PostMapping
     public User createUser(@Valid @RequestBody User user) {
-        return inMemoryUserStorage.createUser(user);
+        return userService.createUser(user);
     }
 
     @PutMapping
     public User updateUser(@Valid @RequestBody User user) {
-        return inMemoryUserStorage.updateUser(user);
+        return userService.updateUser(user);
     }
 
     @GetMapping("/{userId}")
     public User getUserById(@PathVariable int userId) {
-        return inMemoryUserStorage.getUserById(userId);
+        return userService.getUserById(userId);
     }
 
     @DeleteMapping("/{userId}")
     public void deleteUserById(@PathVariable int userId) {
-        inMemoryUserStorage.deleteUserById(userId);
+        userService.deleteUserById(userId);
     }
 
     @PutMapping("/{userId}/friends/{friendId}")
