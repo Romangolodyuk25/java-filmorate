@@ -1,0 +1,12 @@
+MERGE INTO MPA (mpa_id, name) VALUES (1, 'G')
+MERGE INTO MPA (mpa_id, name) VALUES (2, 'PG')
+MERGE INTO MPA (mpa_id, name) VALUES (3, 'PG-13')
+MERGE INTO MPA (mpa_id, name) VALUES (4, 'R')
+MERGE INTO MPA (mpa_id, name) VALUES (5, 'NC-17')
+
+MERGE INTO GENRES (genre_id, name, description) VALUES (1, 'Комедия', 'Смешной фильм')
+MERGE INTO GENRES (genre_id, name, description) VALUES (2, 'Драма', 'Грустный фильм')
+MERGE INTO GENRES (genre_id, name, description) VALUES (3, 'Мультфильм', 'Детский фильм')
+MERGE INTO GENRES (genre_id, name, description) VALUES (4, 'Триллер', 'Интересный фильм')
+MERGE INTO GENRES (genre_id, name, description) VALUES (5, 'Документальный', 'Умный фильм')
+MERGE INTO GENRES (genre_id, name, description) VALUES (6, 'Боевик', 'Взрослый фильм')
