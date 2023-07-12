@@ -26,6 +26,9 @@ public class Film {
     @JsonIgnore
     private final Set<Integer> likes = new HashSet<>();
 
+    //private final List<FilmGenre> genre = new ArrayList<>();
+    private final FilmRating rating;
+
     public void addLike(int id) {
         likes.add(id);
     }

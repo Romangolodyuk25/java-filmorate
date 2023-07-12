@@ -28,6 +28,8 @@ public class User {
     @JsonIgnore
     private final Set<Integer> friends = new HashSet<>();
 
+    //private final HashSet<Integer, FriendsStatus> statusFriend = new HashSet<>()
+
     public void addFriend(int id) {
         friends.add(id);
     }
