@@ -37,9 +37,9 @@ public class FilmDbStorage implements FilmStorage {
     @Override
     public Collection<Film> getAllFilms() {
         String sql = "SELECT f.film_id, f.name, f.description, f.releaseDate, f.duration, f.rate, f.mpa_id, m.name AS mpa_name " +
-                     "FROM FILMS AS f " +
-                     "LEFT JOIN MPA AS m ON f.mpa_id = m.mpa_id " +
-                     "ORDER BY film_id ";
+                "FROM FILMS AS f " +
+                "LEFT JOIN MPA AS m ON f.mpa_id = m.mpa_id " +
+                "ORDER BY film_id ";
         List<Film> films = jdbcTemplate.query(sql, (rs, rowNum) -> makeFilm(rs));
         if (films.size() == 0) {
             log.info("Таблица FILMS пустая");
@@ -115,7 +115,7 @@ public class FilmDbStorage implements FilmStorage {
     @Override
     public void addLike(int filmId, int userId) {
         String sql = "INSERT INTO FAVOURITE_FILM (film_id, user_id)" +
-                     "VALUES (?, ?)";
+                "VALUES (?, ?)";
         jdbcTemplate.update(sql, filmId, userId);
     }
 

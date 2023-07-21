@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
-import javax.persistence.Transient;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -49,6 +48,6 @@ public class Film {
     }
 
     public Set<Genre> getGenres() {
-         return new TreeSet<>(genres);
+        return new TreeSet<>(genres);
     }
 }

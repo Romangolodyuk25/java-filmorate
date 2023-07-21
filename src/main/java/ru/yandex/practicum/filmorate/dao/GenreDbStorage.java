@@ -60,12 +60,12 @@ public class GenreDbStorage implements GenreDao {
     @Override
     public void setFilmAndGenre(Film film) {
         String deleteSql = "DELETE FROM GENRE_AND_FILM " +
-                            "WHERE film_id = ?";
+                "WHERE film_id = ?";
         jdbcTemplate.update(deleteSql, film.getId());
         String sql = "INSERT INTO GENRE_AND_FILM (film_id, genre_id) " +
-                     "VALUES (?, ?)";
+                "VALUES (?, ?)";
         List<Integer> genres = film.getGenres().stream().map(Genre::getId).collect(Collectors.toList());
-        genres.forEach(genre ->  jdbcTemplate.update(sql, film.getId(), genre));
+        genres.forEach(genre -> jdbcTemplate.update(sql, film.getId(), genre));
     }
 
     public Genre makeGenre(ResultSet rs) throws SQLException {
