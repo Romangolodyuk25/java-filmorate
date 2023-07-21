@@ -44,6 +44,7 @@ public class FilmService {
         film.setId(id);
         id++;
         filmDbStorage.createFilm(film);
+        genreDao.setFilmAndGenre(film);
         log.info("Mpa " + film.getMpa());
         return film;
     }
@@ -55,6 +56,7 @@ public class FilmService {
             throw new ObjectNotExistException("Некорректно введены данные");
         }
         filmDbStorage.updateFilm(film);
+        genreDao.setFilmAndGenre(film);
         return film;
     }
 
@@ -88,13 +90,10 @@ public class FilmService {
     }
 
     public void deleteLike(int filmId, int userId) {
-        Film receivedFilm = filmDbStorage.getFilmById(filmId);
-        userDbStorage.getUserById(userId);
-        if (!receivedFilm.getLikes().contains(userId)) {
+        if (userId < 1 || filmId < 1) {
             log.debug("Пользователь с id " + userId + " не ставил оценку фильму");
             throw new IdNotExistException("Данный пользователь не ставил оценку фильму");
         }
-        receivedFilm.deleteId(userId);
         filmDbStorage.deleteLike(filmId, userId);
     }
 

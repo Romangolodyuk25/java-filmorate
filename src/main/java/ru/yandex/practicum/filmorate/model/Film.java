@@ -4,13 +4,12 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
+import javax.persistence.Transient;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @AllArgsConstructor
 @Data
@@ -25,7 +24,9 @@ public class Film {
     @Min(1)
     private int duration;
     @JsonIgnore
-    private final Set<Integer> likes = new HashSet<>();
+    private Set<Integer> likes = new HashSet<>();
+
+    private int rate;
 
     private final Set<Genre> genres = new HashSet<>();
 
@@ -47,4 +48,7 @@ public class Film {
         genres.addAll(genre);
     }
 
+    public Set<Genre> getGenres() {
+         return new TreeSet<>(genres);
+    }
 }

@@ -20,7 +20,7 @@ public class GenreDbStorage implements GenreDao {
 
     @Override
     public Genre findGenreById(int id) {
-        String sql = "SELECT genre_id, name, description  " +
+        String sql = "SELECT genre_id, name " +
                 "FROM GENRES " +
                 "WHERE genre_id = ? ";
         List<Genre> genres = jdbcTemplate.query(sql, (rs, rowNum) -> makeGenre(rs), id);
@@ -32,7 +32,7 @@ public class GenreDbStorage implements GenreDao {
 
     @Override
     public List<Genre> getAllGenres() {
-        String sql = "SELECT genre_id, name, description " +
+        String sql = "SELECT genre_id, name " +
                 "FROM GENRES ";
         List<Genre> genres = jdbcTemplate.query(sql, (rs, rowNum) -> makeGenre(rs));
         if (genres.size() == 0) {
@@ -52,20 +52,23 @@ public class GenreDbStorage implements GenreDao {
 
     @Override
     public void saveGenre(Genre genre) {
-        String sql = "INSERT INTO GENRES (name, description) " +
-                "VALUES (?, ?) ";
-        jdbcTemplate.update(sql, genre.getTitle(), genre.getDescription());
+        String sql = "INSERT INTO GENRES (name) " +
+                "VALUES (?) ";
+        jdbcTemplate.update(sql, genre.getName());
     }
 
     @Override
     public void setFilmAndGenre(Film film) {
+        String deleteSql = "DELETE FROM GENRE_AND_FILM " +
+                            "WHERE film_id = ?";
+        jdbcTemplate.update(deleteSql, film.getId());
         String sql = "INSERT INTO GENRE_AND_FILM (film_id, genre_id) " +
-                "VALUES (?, ?)";
+                     "VALUES (?, ?)";
         List<Integer> genres = film.getGenres().stream().map(Genre::getId).collect(Collectors.toList());
-        jdbcTemplate.update(sql, film.getId(), genres);
+        genres.forEach(genre ->  jdbcTemplate.update(sql, film.getId(), genre));
     }
 
     public Genre makeGenre(ResultSet rs) throws SQLException {
-        return new Genre(rs.getInt("genre_id"), rs.getString("name"), rs.getString("description"));
+        return new Genre(rs.getInt("genre_id"), rs.getString("name"));
     }
 }
