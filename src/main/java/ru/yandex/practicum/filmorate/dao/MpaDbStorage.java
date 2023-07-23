@@ -1,7 +1,7 @@
 package ru.yandex.practicum.filmorate.dao;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.model.Mpa;
@@ -11,10 +11,11 @@ import java.sql.SQLException;
 import java.util.List;
 
 @Slf4j
+@RequiredArgsConstructor
 @Repository
 public class MpaDbStorage implements MpaDao {
-    @Autowired
-    JdbcTemplate jdbcTemplate;
+
+    private final JdbcTemplate jdbcTemplate;
 
     @Override
     public Mpa findRatingById(int id) {
@@ -33,12 +34,7 @@ public class MpaDbStorage implements MpaDao {
         String sql = "SELECT * " +
                 "FROM MPA " +
                 "ORDER BY mpa_id ";
-        List<Mpa> mpa = jdbcTemplate.query(sql, (rs, rowNum) -> makeMpa(rs));
-        if (mpa.size() == 0) {
-            log.info("В таблице MPA нет жанров");
-            return null;
-        }
-        return mpa;
+      return jdbcTemplate.query(sql, (rs, rowNum) -> makeMpa(rs));
     }
 
     @Override

@@ -1,7 +1,7 @@
 package ru.yandex.practicum.filmorate.dao;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -13,10 +13,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Slf4j
+@RequiredArgsConstructor
 @Repository
 public class GenreDbStorage implements GenreDao {
-    @Autowired
-    JdbcTemplate jdbcTemplate;
+
+    private final JdbcTemplate jdbcTemplate;
 
     @Override
     public Genre findGenreById(int id) {
@@ -34,12 +35,7 @@ public class GenreDbStorage implements GenreDao {
     public List<Genre> getAllGenres() {
         String sql = "SELECT genre_id, name " +
                 "FROM GENRES ";
-        List<Genre> genres = jdbcTemplate.query(sql, (rs, rowNum) -> makeGenre(rs));
-        if (genres.size() == 0) {
-            log.info("В таблице GENRES нет жанров");
-            return null;
-        }
-        return genres;
+        return jdbcTemplate.query(sql, (rs, rowNum) -> makeGenre(rs));
     }
 
     @Override

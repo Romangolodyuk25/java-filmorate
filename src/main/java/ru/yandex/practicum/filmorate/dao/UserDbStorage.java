@@ -1,7 +1,7 @@
 package ru.yandex.practicum.filmorate.dao;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
@@ -14,16 +14,12 @@ import java.sql.SQLException;
 import java.util.*;
 
 @Slf4j
+@RequiredArgsConstructor
 @Primary
 @Component("UserDbStorage")
 public class UserDbStorage implements UserStorage {
 
-    JdbcTemplate jdbcTemplate;
-
-    @Autowired
-    public UserDbStorage(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
+    private final JdbcTemplate jdbcTemplate;
 
     @Override
     public Collection<User> getAllUsers() {
@@ -43,7 +39,7 @@ public class UserDbStorage implements UserStorage {
                 "VALUES (?, ?, ?, ?) ";
         jdbcTemplate.update(sql, user.getEmail(), user.getLogin(), user.getName(), user.getBirthday());
         log.info("Юзер " + user + " создан");
-        return new User(user.getId(), user.getEmail(), user.getLogin(), user.getName(), user.getBirthday(), user.getStatusFriend());
+        return new User(user.getId(), user.getEmail(), user.getLogin(), user.getName(), user.getBirthday());
     }
 
     @Override
@@ -71,8 +67,11 @@ public class UserDbStorage implements UserStorage {
     public void deleteUserById(int id) {
         String sql = "DELETE FROM USERS " +
                 "WHERE user_id = ? ";
-        getUserById(id);
-        jdbcTemplate.update(sql, id);
+        int count = jdbcTemplate.update(sql, id);
+        if (count == 0) {
+            log.info("Юзер с айди " + id + " не найден");
+            throw new ObjectNotExistException("Юзера не существует");
+        }
     }
 
     @Override
@@ -116,8 +115,7 @@ public class UserDbStorage implements UserStorage {
                 rs.getString("email"),
                 rs.getString("login"),
                 rs.getString("name"),
-                rs.getDate("birthday").toLocalDate(),
-                new HashMap<>()
+                rs.getDate("birthday").toLocalDate()
         );
     }
 }

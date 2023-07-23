@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.ObjectNotExistException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.time.LocalDate;
@@ -21,14 +20,11 @@ public class UserService {
 
     @Qualifier("UserDbStorage")
     private final UserStorage userDbStorage;
-    @Qualifier("FilmDbStorage")
-    private final FilmStorage filmDbStorage;
     private int id = 1;
 
     @Autowired
-    public UserService(UserStorage userDbStorage, FilmStorage filmDbStorage) {
+    public UserService(UserStorage userDbStorage) {
         this.userDbStorage = userDbStorage;
-        this.filmDbStorage = filmDbStorage;
     }
 
     public User createUser(User user) {
@@ -40,11 +36,6 @@ public class UserService {
     }
 
     public void deleteUserById(int id) {
-        User receivedUser = userDbStorage.getUserById(id);
-        if (receivedUser == null) {
-            log.debug("Пользователь с таким id не существует");
-            throw new ObjectNotExistException("Некорректно введены данные");
-        }
         userDbStorage.deleteUserById(id);
     }
 

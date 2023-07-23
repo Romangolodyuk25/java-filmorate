@@ -88,8 +88,11 @@ public class FilmDbStorage implements FilmStorage {
     public void deleteFilmById(int id) {
         String sql = "DELETE FROM FILMS " +
                 "WHERE film_id = ? ";
-        getFilmById(id);
-        jdbcTemplate.update(sql, id);
+        int count = jdbcTemplate.update(sql, id);
+        if (count == 0) {
+            log.info("Фильм с айди " + id + " не найден");
+            throw new ObjectNotExistException("Фильм не неайден");
+        }
     }
 
     @Override

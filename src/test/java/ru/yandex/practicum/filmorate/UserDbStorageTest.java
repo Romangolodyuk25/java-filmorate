@@ -21,16 +21,6 @@ public class UserDbStorageTest {
     private UserStorage userStorage;
 
     @Test
-    public void testCreateUser() {
-
-    }
-
-    @Test
-    public void testUpdateUser() {
-
-    }
-
-    @Test
     public void testFindUserById() {
         User user = userStorage.getUserById(1);
 

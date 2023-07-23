@@ -70,11 +70,6 @@ public class FilmService {
     }
 
     public void deleteFilmById(int id) {
-        Film receivedFilm = filmDbStorage.getFilmById(id);
-        if (receivedFilm == null) {
-            log.debug("Пользователь с таким id не существует");
-            throw new ObjectNotExistException("Некорректно введены данные");
-        }
         filmDbStorage.deleteFilmById(id);
     }
 

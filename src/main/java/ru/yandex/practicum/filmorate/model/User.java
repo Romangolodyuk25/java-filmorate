@@ -9,7 +9,6 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.PastOrPresent;
 import java.time.LocalDate;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -28,8 +27,6 @@ public class User {
     private LocalDate birthday;
     @JsonIgnore
     private final Set<Integer> friends = new HashSet<>();
-
-    private HashMap<Integer, FriendsStatus> statusFriend = new HashMap<>();
 
     public void addFriend(int id) {
         friends.add(id);
